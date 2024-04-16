@@ -1,0 +1,25 @@
+gcc randomchar.c -o sourceBinary; ./sourceBinary | tee data.txt
+
+
+echo "$(<data.txt)" | od -Ax -vtu1
+
+
+file -bi text1.txt         -   инфа о типе файла
+
+
+iconv -f UTF-32 data2.txt -o /dev/null; echo $?         -  check is valid utf32
+
+
+chmod ugo+x test.sh     --  make script runnable
+
+
+./test.sh     -- run script
+
+
+od -x text.txt     -   численноый вывод текста 
+
+
+echo test | iconv -t utf32 > ffile   - записать текст в файл в утф
+
+    
+
