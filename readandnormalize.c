@@ -20,29 +20,29 @@ void checkCharInArr(char chars[], int offset){
 
 int main() 
 { 
-
-
     FILE *file;
-    char ar[10];
+    const int bufSize = 40;
+    char ar[bufSize];
  
-    file = fopen("data.txt", "r");
+    file = fopen("/dev/urandom", "r");
 
     int maxFileLen = 1;
     int i = 0;
-    int readCount = 3;
+    int readCount = 1;
  
-    while (fgets(ar, readCount, file) != NULL){
+    while (fgets(ar, bufSize, file) != NULL){
 
-        printf("%s", ar);
-        break;
+        //printf("%s", ar);
+        if(i >= readCount){
+            break;
+        }
+        i++;
     }
         
  
-    printf("\n");
     fclose(file);
 
 
-    return 0;
     srand(time(0)); 
 
     const int len = 16;
@@ -53,12 +53,12 @@ int main()
         arr[i] = getRandomCharByte();
     }
 
-    for(int i = 0; i < len; i++){
+    for(int i = 0; i < bufSize; i++){
         
         if(i % 4 == 0){
-            arr[i] = 0;
+            ar[i] = 0;
         }else if((i - 1) % 4 == 0){
-            arr[i] = arr[i] == 0x10 ? arr[i] : arr[i] & 0xf;
+            ar[i] = ar[i] == 0x10 ? ar[i] : ar[i] & 0xf;
         }
         
     }
@@ -72,8 +72,8 @@ int main()
 
     printf("%c%c%c%c", endian[3], endian[2], endian[1], endian[0]);
 
-    for(int i = 0; i < len; i += 4){
-        printf("%c%c%c%c", arr[0+i], arr[1+i],arr[2+i],arr[3+i]);
+    for(int i = 0; i < bufSize; i += 4){
+        printf("%c%c%c%c", ar[0+i], ar[1+i],ar[2+i],ar[3+i]);
     }
     
 
