@@ -21,5 +21,6 @@ od -x text.txt     -   численноый вывод текста
 
 echo test | iconv -t utf32 > ffile   - записать текст в файл в утф
 
-    
+cat /dev/urandom    -   рандомные символы
+
 
