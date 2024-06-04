@@ -3,20 +3,6 @@
 #include <time.h>
 #include <locale.h>
 
-int getRandomInRange(int lower, int upper) 
-{ 
-    int num = (rand() % (upper - lower + 1)) + lower; 
-    return num;
-} 
-
-unsigned char getRandomCharByte(){
-    return getRandomInRange(0, 255);
-}
-
-
-void checkCharInArr(char chars[], int offset){
-
-} 
 
 int main() 
 { 
@@ -42,23 +28,12 @@ int main()
  
     fclose(file);
 
-
-    srand(time(0)); 
-
-    const int len = 16;
-
-    char arr[len];
-
-    for(int i = 0; i < len; i++){
-        arr[i] = getRandomCharByte();
-    }
-
     for(int i = 0; i < bufSize; i++){
         
         if(i % 4 == 0){
             ar[i] = 0;
         }else if((i - 1) % 4 == 0){
-            ar[i] = ar[i] == 0x10 ? ar[i] : ar[i] & 0xf;
+            ar[i] = ar[i] == 0x10 ? ar[i] : (ar[i] == 0x0 ? 0x10 : ar[i] & 0xf);
         }
         
     }
