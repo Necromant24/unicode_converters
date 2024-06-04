@@ -53,7 +53,7 @@ int main()
     for(int i = 0; i < utf32BufSize; i += 4){
         printf("%c%c%c%c", buffer[0+i], buffer[1+i],buffer[2+i],buffer[3+i]);
     }
-    
+
 
 
     return 0;
