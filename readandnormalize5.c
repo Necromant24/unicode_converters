@@ -93,9 +93,10 @@ int main()
     unsigned int nextIndex = 0;
 
 
-
     // 2^11 - ( 11 бит в 2х битном варианте )
     /*
+
+    utf 8 bytes maps and orders
     0xxx xxxx                       0xxx-xxxx
 
     0000 0yyy yyxx xxxx             110y-yyyy 10xx-xxxx
@@ -115,6 +116,7 @@ int main()
     000uuuuuzzzzyyyyyyxxxxxx
 
 
+
     0000-0000__000u-uuuu__zzzz-yyyy__yyxx-xxxx
 
 
@@ -130,16 +132,9 @@ for(int i = 0; i < utf32BufSize; i+=4){
     d[2] = buffer[i+2];
     d[3] = buffer[i+3];
 
-
     eq_num += buffer[i+1] << 16;
     eq_num += buffer[i+2] << 8;
     eq_num += buffer[i+3];
-
-    //printf("%d", eq_num);
-
-    if(eq_num > 0x10ffff){
-        int a = -1;
-    }
 
 
     // if sum in ascii diapazone
@@ -149,9 +144,11 @@ for(int i = 0; i < utf32BufSize; i+=4){
 
     // if contains 2 bytes
     }else if(eq_num > 0b1111111 && eq_num <= 0b11111111111){
+        // get 1st byte
         utf8bytes[nextIndex] = 0b110 << 5;
         utf8bytes[nextIndex] += eq_num >> 6;
         nextIndex++;
+        // get 2nd byte
         utf8bytes[nextIndex] = 0b10 << 6;
         utf8bytes[nextIndex] += eq_num & 0b111111;
         nextIndex++;
