@@ -47,7 +47,7 @@ int main()
     endian[0] = 0xff;
 
 
-    // mode - 1 (utf-8),  - 0 (utf-32)
+    // mode - 1 (reconvert utf-32 in utf-8 and print in utf-8),  - 0 (print in utf-32)
     int mode = 1;
 
     if(mode == 0){

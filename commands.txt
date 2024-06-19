@@ -7,7 +7,7 @@ echo "$(<data.txt)" | od -Ax -vtu1
 file -bi text1.txt         -   инфа о типе файла
 
 
-iconv -f UTF-32 data2.txt -o /dev/null; echo $?         -  check is valid utf32
+iconv -f UTF-32 data.txt -o /dev/null; echo $?         -  check is valid utf32
 
 
 chmod ugo+x test.sh     --  make script runnable
