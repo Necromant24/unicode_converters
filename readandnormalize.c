@@ -64,18 +64,6 @@ int main()
 
     // no need in BOM in utf-8
 
-    unsigned char utf32to8bytes[8];
-    utf32to8bytes[0] = 0;
-    utf32to8bytes[1] = 0xf;
-    utf32to8bytes[2] = 0xad;
-    utf32to8bytes[3] = 0x63;
-
-    utf32to8bytes[4] = 0;
-    utf32to8bytes[5] = 0x1;
-    utf32to8bytes[6] = 0x1;
-    utf32to8bytes[7] = 0x1;
-
-
     unsigned char utf8bytes[utf32BufSize];
     unsigned int nextIndex = 0;
 
