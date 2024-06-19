@@ -40,6 +40,7 @@ int main()
     }
 
 
+    // BOM encoding flags in file start
     unsigned char endian[4];
     endian[3] = 0;
     endian[2] = 0;
@@ -61,21 +62,7 @@ int main()
     }
     
 
-    // no need in BOM?
-    // unsigned char utf8endian[3];
-    // utf8endian[0] = 0xEF;
-    // utf8endian[1] = 0xBB;
-    // utf8endian[2] = 0xBF;
-    //printf("%c%c%c", utf8endian[0], utf8endian[1], utf8endian[2]);
-
-    unsigned char utf8test[3];
-    utf8test[0] = 0x74;
-    utf8test[1] = 0x65;
-    utf8test[2] = 0x73;
-
-    printf("%c%c%c", utf8test[0], utf8test[1], utf8test[2]);
-
-
+    // no need in BOM in utf-8
 
     unsigned char utf32to8bytes[8];
     utf32to8bytes[0] = 0;
@@ -107,7 +94,6 @@ int main()
 
 
 
-
     utf32
     max
     10FFFF - hex
@@ -132,52 +118,53 @@ for(int i = 0; i < utf32BufSize; i+=4){
     d[2] = buffer[i+2];
     d[3] = buffer[i+3];
 
+    
     eq_num += buffer[i+1] << 16;
     eq_num += buffer[i+2] << 8;
     eq_num += buffer[i+3];
 
 
-    // if sum in ascii diapazone
-    if(eq_num <= 0b1111111){
-        utf8bytes[nextIndex] = eq_num & 0b1111111;
+    // check if sum in ascii diapazone
+    if(eq_num <= 0x7F){
+        utf8bytes[nextIndex] = eq_num & 0x7F;
         nextIndex++;
 
     // if contains 2 bytes
-    }else if(eq_num > 0b1111111 && eq_num <= 0b11111111111){
+    }else if(eq_num > 0x7F && eq_num <= 0x7FF){
         // get 1st byte
-        utf8bytes[nextIndex] = 0b110 << 5;
+        utf8bytes[nextIndex] = 6 << 5;
         utf8bytes[nextIndex] += eq_num >> 6;
         nextIndex++;
         // get 2nd byte
-        utf8bytes[nextIndex] = 0b10 << 6;
-        utf8bytes[nextIndex] += eq_num & 0b111111;
+        utf8bytes[nextIndex] = 2 << 6;
+        utf8bytes[nextIndex] += eq_num & 63;
         nextIndex++;
 
     // if contains 3 bytes
-    }else if(eq_num > 0b11111111111 && eq_num <= 0b1111111111111111){
-        utf8bytes[nextIndex] = 0b1110 << 4;
+    }else if(eq_num > 0x7ff && eq_num <= 0xffff){
+        utf8bytes[nextIndex] = 14 << 4;
         utf8bytes[nextIndex] += eq_num >> 12;
         nextIndex++;
-        utf8bytes[nextIndex] = 0b10 << 6;
-        utf8bytes[nextIndex] += (eq_num >> 6) & 0b111111;
+        utf8bytes[nextIndex] = 2 << 6;
+        utf8bytes[nextIndex] += (eq_num >> 6) & 63;
         nextIndex++;
-        utf8bytes[nextIndex] = 0b10 << 6;
-        utf8bytes[nextIndex] += eq_num && 0b111111;
+        utf8bytes[nextIndex] = 2 << 6;
+        utf8bytes[nextIndex] += eq_num && 63;
         nextIndex++;
 
     // if contains 4 bytes
-    }else if(eq_num > 0b1111111111111111 && eq_num <= 0x10ffff){
-        utf8bytes[nextIndex] = 0b11110 << 3;
-        utf8bytes[nextIndex] += (eq_num >> 18) & 0b111;
+    }else if(eq_num > 0xffff && eq_num <= 0x10ffff){
+        utf8bytes[nextIndex] = 30 << 3;
+        utf8bytes[nextIndex] += (eq_num >> 18) & 7;
         nextIndex++;
-        utf8bytes[nextIndex] = 0b10 << 6;
-        utf8bytes[nextIndex] += (eq_num >> 12) & 0b111111;
+        utf8bytes[nextIndex] = 2 << 6;
+        utf8bytes[nextIndex] += (eq_num >> 12) & 63;
         nextIndex++;
-        utf8bytes[nextIndex] = 0b10 << 6;
-        utf8bytes[nextIndex] += (eq_num >> 6) && 0b111111;
+        utf8bytes[nextIndex] = 2 << 6;
+        utf8bytes[nextIndex] += (eq_num >> 6) && 63;
         nextIndex++;
-        utf8bytes[nextIndex] = 0b10 << 6;
-        utf8bytes[nextIndex] += eq_num && 0b111111;
+        utf8bytes[nextIndex] = 2 << 6;
+        utf8bytes[nextIndex] += eq_num && 63;
         nextIndex++;
 
     }else{
