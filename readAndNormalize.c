@@ -4,22 +4,20 @@
 #include <stdio.h>
 
 
-
-unsigned char * getRandomChars(unsigned short size){
-    unsigned char *buffer = calloc(size, sizeof(char));
+//? а можно ли void т.к. size_t и size по логике одно и тоже?
+void getRandomChars(unsigned char *buffer, unsigned int size){
     FILE *file;
 
     file = fopen("/dev/urandom", "r");
 
     if(fgets(buffer, size, file) == NULL){
         fclose(file);
-        return NULL;
     }
 
     fclose(file);
     //free(file);
 
-    return buffer;
+
 }
 
 
@@ -48,7 +46,7 @@ void normalizeBytesToUtf32(char *buffer, unsigned int size){
 
 
 
-unsigned char * convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned int *newSize){
+size_t convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned char **new_buffer){
     unsigned char *utf8bytes = malloc(size * sizeof(unsigned char));
 
     unsigned int nextIndex = 0;
@@ -85,12 +83,6 @@ unsigned char * convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned int
     for(int i = 0; i < size; i+=4){
         // sum of four bytes of utf32
         long eq_num = 0;
-
-        unsigned char d[4];
-        d[0] = buffer[i];
-        d[1] = buffer[i+1];
-        d[2] = buffer[i+2];
-        d[3] = buffer[i+3];
 
         
         eq_num += buffer[i+1] << 16;
@@ -142,8 +134,8 @@ unsigned char * convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned int
             nextIndex++;
 
         }else{
-            printf("error");
-            return 1;
+            printf("error in parsing utf32, maybe its not utf32?");
+            return -1;
         }
         
     }
@@ -151,10 +143,10 @@ unsigned char * convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned int
     // изменяем размер выделенной памяти т.к. размеры utf8 & utf32 могут не совпадать
     realloc(utf8bytes, nextIndex+1);
 
-    // получаем размер нового массива utf8
-    newSize[0] = nextIndex + 1;
+    *new_buffer = &utf8bytes;
 
-    return utf8bytes;
+    // получаем размер нового массива utf8
+    return nextIndex+1;
 }
 
 
@@ -166,7 +158,9 @@ int main()
     const unsigned int charsCount = 10;
     // количество выделяемых байт для символов
     const unsigned int utf32BufSize = charsCount * 4;
-    unsigned char *buffer = getRandomChars(utf32BufSize);
+    unsigned char *buffer = malloc(utf32BufSize * sizeof(unsigned char));
+    
+    getRandomChars(buffer, utf32BufSize);
 
     
     normalizeBytesToUtf32(buffer, utf32BufSize);
@@ -196,13 +190,12 @@ int main()
     }
     
 
-    unsigned int *utf8Size = malloc(sizeof(unsigned int));
-    unsigned char *utf8bytes = convertUtf32ToUtf8(buffer, utf32BufSize, utf8Size);
-
+    unsigned char ** p_utf8bytes = malloc(sizeof(unsigned char));
+    size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize, p_utf8bytes);
 
     
-    for(int i = 0; i < utf8Size[0]; i ++){
-        printf("%c", utf8bytes[i]);
+    for(int i = 0; i < utf8Size; i ++){
+        printf("%c", *p_utf8bytes[i]);
     }
 
 
