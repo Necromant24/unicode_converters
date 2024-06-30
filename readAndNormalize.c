@@ -102,34 +102,34 @@ size_t convertUtf32ToUtf8(char *utf8bytes, unsigned int size){
             nextIndex++;
             // get 2nd byte
             utf8bytes[nextIndex] = 2 << 6;
-            utf8bytes[nextIndex] += eq_num & 63;
+            utf8bytes[nextIndex] += eq_num & 0x3f;
             nextIndex++;
 
         // if contains 3 bytes
         }else if(eq_num > 0x7ff && eq_num <= 0xffff){
-            utf8bytes[nextIndex] = 14 << 4;
-            utf8bytes[nextIndex] += eq_num >> 12;
+            utf8bytes[nextIndex] = 0xe << 4;
+            utf8bytes[nextIndex] += eq_num >> 0xc;
             nextIndex++;
             utf8bytes[nextIndex] = 2 << 6;
-            utf8bytes[nextIndex] += (eq_num >> 6) & 63;
+            utf8bytes[nextIndex] += (eq_num >> 6) & 0x3f;
             nextIndex++;
             utf8bytes[nextIndex] = 2 << 6;
-            utf8bytes[nextIndex] += eq_num && 63;
+            utf8bytes[nextIndex] += eq_num && 0x3f;
             nextIndex++;
 
         // if contains 4 bytes
         }else if(eq_num > 0xffff && eq_num <= 0x10ffff){
-            utf8bytes[nextIndex] = 30 << 3;
-            utf8bytes[nextIndex] += (eq_num >> 18) & 7;
+            utf8bytes[nextIndex] = 0x1e << 3;
+            utf8bytes[nextIndex] += (eq_num >> 0x12) & 7;
             nextIndex++;
             utf8bytes[nextIndex] = 2 << 6;
-            utf8bytes[nextIndex] += (eq_num >> 12) & 63;
+            utf8bytes[nextIndex] += (eq_num >> 0xc) & 0x3f;
             nextIndex++;
             utf8bytes[nextIndex] = 2 << 6;
-            utf8bytes[nextIndex] += (eq_num >> 6) && 63;
+            utf8bytes[nextIndex] += (eq_num >> 6) && 0x3f;
             nextIndex++;
             utf8bytes[nextIndex] = 2 << 6;
-            utf8bytes[nextIndex] += eq_num && 63;
+            utf8bytes[nextIndex] += eq_num && 0x3f;
             nextIndex++;
 
         }else{
@@ -172,7 +172,7 @@ int main()
 
 
     // mode - 1 (reconvert utf-32 in utf-8 and print in utf-8),  - 0 (print in utf-32)
-    int mode = 0;
+    int mode = 1;
 
     // если выбран режим 0 то записываем результат, иначе переходим к блоку реконвертации в утф8 
     if(mode == 0){
