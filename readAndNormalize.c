@@ -212,7 +212,7 @@ int main()
 
     size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize);
 
-    if(utf8Size < 0){
+    if((int)utf8Size < 0){
         printf("error in convertUtf32ToUtf8");
         return 1;
     }
