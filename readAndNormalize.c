@@ -5,24 +5,32 @@
 
 
 //? а можно ли void т.к. size_t и size по логике одно и тоже?
-void getRandomChars(unsigned char *buffer, unsigned int size){
+size_t getRandomChars(unsigned char *buffer, unsigned int size){
     FILE *file;
 
     file = fopen("/dev/urandom", "r");
 
     if(fgets(buffer, size, file) == NULL){
         fclose(file);
+        printf("cant get random chars");
+        return -1;
     }
 
     fclose(file);
     //free(file);
 
-
+    return size;
 }
 
 
 
-void normalizeBytesToUtf32(char *buffer, unsigned int size){
+size_t normalizeBytesToUtf32(char *buffer, unsigned int size){
+
+
+    if(size < 4 || size % 4 != 0){
+        printf("error, incorrect buffer size, it must be could divided by 4");
+        return -1;
+    }
 
     for(int i = 0; i < size; i+=4){
         buffer[i] = 0;
@@ -42,6 +50,7 @@ void normalizeBytesToUtf32(char *buffer, unsigned int size){
         // байты 3 и 4 оставляем как есть
     }
 
+    return size;
 }
 
 
@@ -49,6 +58,11 @@ void normalizeBytesToUtf32(char *buffer, unsigned int size){
 size_t convertUtf32ToUtf8(char *utf8bytes, unsigned int size){
 
     unsigned int nextIndex = 0;
+
+    if(size < 4 || size % 4 != 0){
+        printf("error, incorrect buffer size, it must be could divided by 4");
+        return -1;
+    }
 
 
     // 2^11 - ( 11 бит в 2х битном варианте )
@@ -157,10 +171,19 @@ int main()
     const unsigned int utf32BufSize = charsCount * 4;
     unsigned char *buffer = malloc(utf32BufSize * sizeof(unsigned char));
     
-    getRandomChars(buffer, utf32BufSize);
+    int check_s = getRandomChars(buffer, utf32BufSize);
 
+    if(check_s < 0){
+        printf("error in getRandomChars");
+        return 1;
+    }
     
-    normalizeBytesToUtf32(buffer, utf32BufSize);
+    check_s = normalizeBytesToUtf32(buffer, utf32BufSize);
+
+    if(check_s < 0){
+        printf("error in normalizeBytesToUtf32");
+        return 1;
+    }
 
 
     // BOM encoding flags in file start
@@ -188,6 +211,11 @@ int main()
     
 
     size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize);
+
+    if(utf8Size < 0){
+        printf("error in convertUtf32ToUtf8");
+        return 1;
+    }
 
 
     for(int i = 0; i < utf8Size; i ++){
