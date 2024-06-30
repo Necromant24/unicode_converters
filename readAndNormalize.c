@@ -46,8 +46,7 @@ void normalizeBytesToUtf32(char *buffer, unsigned int size){
 
 
 
-size_t convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned char **new_buffer){
-    unsigned char *utf8bytes = malloc(size * sizeof(unsigned char));
+size_t convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned char *utf8bytes){
 
     unsigned int nextIndex = 0;
 
@@ -143,8 +142,6 @@ size_t convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned char **new_b
     // изменяем размер выделенной памяти т.к. размеры utf8 & utf32 могут не совпадать
     realloc(utf8bytes, nextIndex+1);
 
-    *new_buffer = &utf8bytes;
-
     // получаем размер нового массива utf8
     return nextIndex+1;
 }
@@ -190,12 +187,12 @@ int main()
     }
     
 
-    unsigned char ** p_utf8bytes = malloc(sizeof(unsigned char));
-    size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize, p_utf8bytes);
+    unsigned char * utf8bytes = malloc(sizeof(unsigned char) * utf32BufSize);
+    size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize, utf8bytes);
 
-    
+
     for(int i = 0; i < utf8Size; i ++){
-        printf("%c", *p_utf8bytes[i]);
+        printf("%c", utf8bytes[i]);
     }
 
 
