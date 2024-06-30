@@ -46,7 +46,7 @@ void normalizeBytesToUtf32(char *buffer, unsigned int size){
 
 
 
-size_t convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned char *utf8bytes){
+size_t convertUtf32ToUtf8(char *utf8bytes, unsigned int size){
 
     unsigned int nextIndex = 0;
 
@@ -84,9 +84,9 @@ size_t convertUtf32ToUtf8(char *buffer, unsigned int size, unsigned char *utf8by
         long eq_num = 0;
 
         
-        eq_num += buffer[i+1] << 16;
-        eq_num += buffer[i+2] << 8;
-        eq_num += buffer[i+3];
+        eq_num += utf8bytes[i+1] << 16;
+        eq_num += utf8bytes[i+2] << 8;
+        eq_num += utf8bytes[i+3];
 
 
         // check if sum in ascii diapazone
@@ -172,7 +172,7 @@ int main()
 
 
     // mode - 1 (reconvert utf-32 in utf-8 and print in utf-8),  - 0 (print in utf-32)
-    int mode = 1;
+    int mode = 0;
 
     // если выбран режим 0 то записываем результат, иначе переходим к блоку реконвертации в утф8 
     if(mode == 0){
@@ -187,12 +187,11 @@ int main()
     }
     
 
-    unsigned char * utf8bytes = malloc(sizeof(unsigned char) * utf32BufSize);
-    size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize, utf8bytes);
+    size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize);
 
 
     for(int i = 0; i < utf8Size; i ++){
-        printf("%c", utf8bytes[i]);
+        printf("%c", buffer[i]);
     }
 
 
