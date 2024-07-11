@@ -5,7 +5,7 @@
 
 
 //? а можно ли void т.к. size_t и size по логике одно и тоже?
-size_t getRandomChars(unsigned char *buffer, unsigned int size){
+size_t getRandomChars(unsigned char *buffer, size_t size){
     FILE *file;
 
     file = fopen("/dev/urandom", "r");
@@ -13,7 +13,7 @@ size_t getRandomChars(unsigned char *buffer, unsigned int size){
     if(fgets(buffer, size, file) == NULL){
         fclose(file);
         printf("cant get random chars");
-        return -1;
+        return 0;
     }
 
     fclose(file);
@@ -24,12 +24,19 @@ size_t getRandomChars(unsigned char *buffer, unsigned int size){
 
 
 
-size_t normalizeBytesToUtf32(char *buffer, unsigned int size){
+size_t normalizeBytesToUtf32(char *buffer, size_t size){
 
 
-    if(size < 4 || size % 4 != 0){
-        printf("error, incorrect buffer size, it must be could divided by 4");
-        return -1;
+    if(size < 4){
+        printf("error, incorrect buffer size, it must be higher or equeals 4");
+        return 0;
+    }
+
+    // подгонка размера буфера для обработки
+    if(size % 4 != 0){
+        size = size / 4;
+
+        realloc(buffer, size);
     }
 
     for(int i = 0; i < size; i+=4){
@@ -55,13 +62,20 @@ size_t normalizeBytesToUtf32(char *buffer, unsigned int size){
 
 
 
-size_t convertUtf32ToUtf8(char *utf8bytes, unsigned int size){
+size_t convertUtf32ToUtf8(char *utf8bytes, size_t size){
 
-    unsigned int nextIndex = 0;
+    size_t nextIndex = 0;
 
-    if(size < 4 || size % 4 != 0){
-        printf("error, incorrect buffer size, it must be could divided by 4");
-        return -1;
+    if(size < 4){
+        printf("error, incorrect buffer size, it must be higher or equeals 4");
+        return 0;
+    }
+
+    // подгонка размера буфера для обработки
+    if(size % 4 != 0){
+        size = size / 4;
+
+        realloc(utf8bytes, size);
     }
 
 
@@ -148,7 +162,7 @@ size_t convertUtf32ToUtf8(char *utf8bytes, unsigned int size){
 
         }else{
             printf("error in parsing utf32, maybe its not utf32?");
-            return -1;
+            return 0;
         }
         
     }
@@ -171,16 +185,16 @@ int main()
     const unsigned int utf32BufSize = charsCount * 4;
     unsigned char *buffer = malloc(utf32BufSize * sizeof(unsigned char));
     
-    int check_s = getRandomChars(buffer, utf32BufSize);
+    size_t check_s = getRandomChars(buffer, utf32BufSize);
 
-    if(check_s < 0){
+    if(check_s == 0){
         printf("error in getRandomChars");
         return 1;
     }
     
     check_s = normalizeBytesToUtf32(buffer, utf32BufSize);
 
-    if(check_s < 0){
+    if(check_s == 0){
         printf("error in normalizeBytesToUtf32");
         return 1;
     }
@@ -212,7 +226,7 @@ int main()
 
     size_t utf8Size = convertUtf32ToUtf8(buffer, utf32BufSize);
 
-    if((int)utf8Size < 0){
+    if(utf8Size == 0){
         printf("error in convertUtf32ToUtf8");
         return 1;
     }
